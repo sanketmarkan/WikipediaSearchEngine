@@ -13,7 +13,6 @@ sys.setdefaultencoding('utf-8')
 trie = datrie.Trie(string.ascii_lowercase)
 
 def mapper(tdlist, fileNo):
-	print str(fileNo) + " opened"
 	for word, doc in tdlist:
 		word = word.decode("utf-8")
 		if word not in trie:
@@ -35,7 +34,6 @@ def mapper(tdlist, fileNo):
 		fileName = "listFiles/"+str(fileNo)+"-"+str(i)+".txt"
 		with open(fileName, "w+") as f:
 			json.dump(lisoflis[i], f)
-	print str(fileNo) + " closed"
 	
 
 def reducer(bin):
@@ -50,7 +48,6 @@ def reducer(bin):
 			time.sleep(3)
 			with open(fileName, "rw+") as f:
 				data = json.load(f)
-		print bin, i
 		for word, docs in data:
 			word = word.decode("utf-8")
 			if word not in trie:
@@ -83,8 +80,6 @@ def process(data, fileC):
 				tdlist = []
 				fileNo += 1
 	
-	if fileC%100==0:
-		print fileC
 
 if __name__ == "__main__":
 
@@ -119,19 +114,20 @@ if __name__ == "__main__":
 							process(c.text, fileC)
 							
 			fileC += 1
-	print len(tdlist), fileNo
 	if len(tdlist) > 0:
 		Process(target=mapper,args=(tdlist, fileNo,)).start()
 
 	for i in range(5):
 		lis[i].join()
-	print "haha"
+	data = []
+	for i in range(5):
+		fileName = "listFiles/final"+str(i)+".txt"
+		with open(fileName, "r") as f:
+			data += json.load(f)
+
 	fileName = sys.argv[2]
 	with open(fileName, "w+") as f:
-		for i in range(5):
-			fileName2 = "listFiles/final"+str(i)+".txt"
-			with open(fileName2, "r") as f2:
-				json.dump(json.load(f2), f)
+		json.dump(data, f)
 
 
 	os.system("rm -rf data listFiles")

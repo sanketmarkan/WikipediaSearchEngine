@@ -43,30 +43,33 @@ def reducer(bin, fileC):
 
 	lisoflis = []
 	champ = []
-	c = 0
+	c = 1
 	dic = {}
-	for key in trie.keys():
-		tr = trie[key]
-		lis = []
-		for doc in tr.keys():
-			lis.append([tr[doc], doc])
-		lisoflis.append([key, len(tr.keys()), lis])
-		lis.sort()
-		lis.reverse()
-		lis = [x[1] for x in lis[:1000]]
-		lis.sort()
-		champ.append([key, lis])
-		dic[key] = c
-		c += 1
-
-
 	fileName = "listFiles/final"+str(bin)+".txt"
+	fileName2 = "listFiles/champ"+str(bin)+".txt"
+
 	with open(fileName, "w+") as f:
-		json.dump(lisoflis, f)
+		with open(fileName2, "w+") as f2:
+			for key in trie.keys():
+				tr = trie[key]
+				lis = []
+				for doc in tr.keys():
+					lis.append([tr[doc], doc])
+				# lisoflis.append([key, len(tr.keys()), lis])
+				f.write(str([len(tr.keys()), lis])+'\n')
+				lis.sort()
+				lis.reverse()
+				lis = [x[1] for x in lis[:1000]]
+				lis.sort()
+				# champ.append([key, lis])
+				f2.write(str(lis)+'\n')
+				dic[key] = c
+				c += 1
+
+
+		# json.dump(lisoflis, f)
 	
-	fileName = "listFiles/champ"+str(bin)+".txt"
-	with open(fileName, "w+") as f:
-		json.dump(champ, f)
+		# json.dump(champ, f)
 
 	fileName = "listFiles/dict"+str(bin)+".txt"
 	with open(fileName, "w+") as f:

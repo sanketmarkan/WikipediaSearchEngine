@@ -1,0 +1,2 @@
+#REDIRECT [[Cryptography]]
+{{R from CamelCase}}

@@ -1,0 +1,3 @@
+#REDIRECT [[Analysis of variance]]
+
+{{R from CamelCase}}

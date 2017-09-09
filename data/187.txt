@@ -1,0 +1,3 @@
+#redirect [[Al Gore]]
+
+{{R from CamelCase}}

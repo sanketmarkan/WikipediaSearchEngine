@@ -1,0 +1,4 @@
+#REDIRECT [[Belgium]]
+
+{{R from CamelCase}}
+{{R from alternative language}}

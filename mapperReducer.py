@@ -1,20 +1,20 @@
 from importFile import *
 
 # trie = datrie.Trie(string.ascii_lowercase+string.digits+":")
-def mapper(tdlist, fileNo):
-	print fileNo
-	for i in range(5):
-		fileName = "listFiles/"+str(fileNo)+"-"+str(i)+".txt"
+def mapper(tdlist, fileNo, catIn):
+	print fileNo, catIn
+	for i in range(nop[catIn]):
+		fileName = "listFiles/"+str(fileNo)+"-"+str(catIn)+"-"+str(i)+".txt"
 		with open(fileName, "w+") as f:
 			json.dump(tdlist[i], f)
 
 
-def reducer(bin, fileC):
+def reducer(bin, fileC, catIn):
 	print str(bin)+"started"
-	trie = datrie.Trie(string.ascii_lowercase)
+	trie = datrie.Trie(string.ascii_lowercase+string.digits)
 	start = time.time()
 	for i in range(1, fileC):
-		fileName = "listFiles/"+str(i)+"-"+str(bin)+".txt"
+		fileName = "listFiles/"+str(i)+"-"+str(catIn)+"-"+str(bin)+".txt"
 		# while os.path.isfile(fileName) == False:
 		# 	time.sleep(3)
 		# try:
@@ -45,8 +45,8 @@ def reducer(bin, fileC):
 	champ = []
 	c = 1
 	dic = {}
-	fileName = "listFiles/final"+str(bin)+".txt"
-	fileName2 = "listFiles/champ"+str(bin)+".txt"
+	fileName = "Index/final"+str(bin)+"-"+str(catIn)+".txt"
+	fileName2 = "Index/champ"+str(bin)+"-"+str(catIn)+".txt"
 
 	with open(fileName, "w+") as f:
 		with open(fileName2, "w+") as f2:
@@ -54,11 +54,15 @@ def reducer(bin, fileC):
 				tr = trie[key]
 				lis = []
 				for doc in tr.keys():
-					lis.append([tr[doc], doc])
+					freq = tr[doc]
+					lis.append([freq, doc])
 				# lisoflis.append([key, len(tr.keys()), lis])
+
 				f.write(str([len(tr.keys()), lis])+'\n')
 				lis.sort()
 				lis.reverse()
+				# if len(lis) > 1000:
+				# 	print key, c
 				lis = [x[1] for x in lis[:1000]]
 				lis.sort()
 				# champ.append([key, lis])
@@ -71,11 +75,13 @@ def reducer(bin, fileC):
 	
 		# json.dump(champ, f)
 
-	fileName = "listFiles/dict"+str(bin)+".txt"
+	fileName = "Index/dict"+str(bin)+"-"+str(catIn)+".txt"
 	with open(fileName, "w+") as f:
-		pickle.dump(dic, f)
+		json.dump(dic, f)
 	
 	end = time.time()
 	print bin, end - start
 	# 39.76939039228
 	# 18.704721736902
+
+	#15239 - Jon Snow

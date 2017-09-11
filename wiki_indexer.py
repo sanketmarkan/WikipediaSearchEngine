@@ -66,7 +66,7 @@ def process(data, fileC):
 		loop(data2, fileC, 3)
 
 	data = re.sub("\{\{[^\}]*\}\}|\[\[file:[^\]]*\]\]|\[\[category:[^\]]*\]\]", " ", data)
-	data = re.findall(r"[a-zA-Z]+", data)
+	data = re.findall(r"[a-zA-Z0-9]+", data)
 	loop(data, fileC, 0)
 
 if __name__ == "__main__":

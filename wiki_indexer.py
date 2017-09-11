@@ -1,15 +1,43 @@
 from mapperReducer import *
+import xml.sax.handler
 
+class MyHandler(xml.sax.handler.ContentHandler):
+	def __init__(self):
+		self.name = ""
+		self.title_data = ""
+		self.text_data = ""
+		self.fileC = 1
+	def startElement(self,name,attrs):
+		self.name = name
+		if(name=='title'):
+			self.title_data = ""
+		elif(name=='text'):
+			self.text_data = ""
+	def characters(self,data):
+		if(self.name =='title'):
+			self.title_data += data
+		elif(self.name == 'text'):
+			self.text_data += data
+	def endElement(self,name):
+		if(self.name=='title'):
+			fileName = "title/"+ str(self.fileC) + '.txt'
+			with open(fileName,"w+") as f:
+				data = re.findall(r"[a-zA-Z]+", self.title_data.lower())        	
+				loop(data, self.fileC, 1)
+				f.write(self.title_data)
+		elif(self.name=='text'):
+			fileName = "data/"+ str(self.fileC) + '.txt'
+			with open(fileName,"w+") as f:
+				process(self.text_data.lower(), self.fileC)
+				self.fileC += 1
+				f.write(self.text_data)
 
 def loop(data, fileC, catIn):
 	global tdlist, stemmer, count, fileNo, proc
 	for item in data:
 		if item not in stop_words:
 			item = stemmer.stemWord(item)
-			no = (ord(item[0])-ord('a'))/5
-			no = min(no, 4)
-			if catIn!=1:
-				no = 0
+			no = getBin(item[0], catIn)
 			tdlist[catIn][no].append([item, fileC])
 			count[catIn] += 1
 			if count[catIn] > 10**6:
@@ -32,12 +60,14 @@ def process(data, fileC):
 		data2 = re.findall(r"[a-zA-Z0-9]+", category)
 		loop(data2, fileC, 2)
 	
-	data2 = re.findall(r"\{\{infobox[^\}]*\}\}", a)[0].strip("{").strip("}").split()[1:]
-	loop(data2, fileC, 3)
+	data2 = re.findall(r"\{\{infobox[^\}]*\}\}", data)
+	if len(data2):
+		data2 = re.findall(r"[a-zA-Z0-9]+", data2[0])[1:]
+		loop(data2, fileC, 3)
 
 	data = re.sub("\{\{[^\}]*\}\}|\[\[file:[^\]]*\]\]|\[\[category:[^\]]*\]\]", " ", data)
 	data = re.findall(r"[a-zA-Z]+", data)
-	loop(data, fileC, 1)
+	loop(data, fileC, 0)
 
 if __name__ == "__main__":
 
@@ -56,34 +86,18 @@ if __name__ == "__main__":
 	fileNo = [1]*nof
 	lis = []
 
-	tree = et.parse(sys.argv[1])
-	root = tree.getroot()
+	# tree = et.parse(sys.argv[1])
+	# root = tree.getroot()
 	fileC = 1
-	print "parsed"
 	os.system("rm -rf data; mkdir data")
 	os.system("rm -rf listFiles; mkdir listFiles")
 	os.system("rm -rf Index; mkdir Index")
-
-	for child in root:
-		if(child.tag.endswith('page')):
-			for t in child:
-				fileName = "data/"+ str(fileC) + '.txt'
-				with open(fileName,"w+") as f:
-					if(t.tag.endswith('title')):
-						if (t.text):
-							f.write(t.text)
-							f.write("\n")
-							data = re.findall(r"[a-zA-Z]+", t.text.lower())
-							loop(data, fileC, 0)
-					if(t.tag.endswith('revision')):
-						for c in t:
-							if c.tag.endswith('text'):
-								if (c.text):
-									f.write(c.text)
-									process(c.text.lower(), fileC)
-								
-			fileC += 1
-
+	os.system("rm -rf title; mkdir title")
+	parser = xml.sax.make_parser()
+	handler = MyHandler()
+	parser.setContentHandler(handler)
+	parser.parse(open(sys.argv[1]))
+	print "parsed"
 	for i in range(nof):
 		if count[i] > 0:
 			mapp.append(Process(target=mapper,args=(tdlist[i], fileNo[i], i)))
@@ -100,16 +114,3 @@ if __name__ == "__main__":
 	for proc in lis:
 		proc.join()
 	print fileC
-
-	# data = []
-	# for i in range(5):
-	# 	fileName = "listFiles/final"+str(i)+".txt"
-	# 	with open(fileName, "r") as f:
-	# 		data += json.load(f)
-
-	# fileName = sys.argv[2]
-	# with open(fileName, "w+") as f:
-	# 	json.dump(data, f)
-
-
-	# os.system("rm -rf data listFiles")

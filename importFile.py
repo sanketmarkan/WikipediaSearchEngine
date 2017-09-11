@@ -12,10 +12,17 @@ sys.setdefaultencoding('utf-8')
 
 field = {}
 
-field['t'] = 0
-field['b'] = 1
+field['b'] = 0
+field['t'] = 1
 field['c'] = 2
 field['i'] = 3
 nof = 4
 
-nop = [1,5,1,1]
+nop = [5,1,1,1]
+
+def getBin(cha, catIn):
+	no = (ord(cha)-ord('a'))/5
+	no = min(no, 4)
+	if catIn!=0:
+		no = 0
+	return no

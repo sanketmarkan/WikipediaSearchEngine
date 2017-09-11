@@ -58,7 +58,7 @@ def reducer(bin, fileC, catIn):
 					lis.append([freq, doc])
 				# lisoflis.append([key, len(tr.keys()), lis])
 
-				f.write(str([len(tr.keys()), lis])+'\n')
+				f.write(str(lis)+'\n')
 				lis.sort()
 				lis.reverse()
 				# if len(lis) > 1000:
@@ -67,7 +67,7 @@ def reducer(bin, fileC, catIn):
 				lis.sort()
 				# champ.append([key, lis])
 				f2.write(str(lis)+'\n')
-				dic[key] = c
+				dic[key] = [c, len(tr.keys())]
 				c += 1
 
 
